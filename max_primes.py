@@ -1,23 +1,34 @@
-import sys, math, time, os, copy
+import sys, math, time, os, copy, signal
 import multiprocessing as mp
 from multiprocessing import Process, Queue
+from threading import Thread
+
+def handler(signum, stack):
+	print "bye bye"
 
 def timer():
+	i = 2
+	while i > 0:
+		print "You have " + str(i) + " seconds left."
+		time.sleep(1)
+		i -= 1
 
-
+	print "You are out of time!"
+	os.kill(os.getppid(), signal.SIGUSR1)
 
 def main(args):
+
 	# I am going to use #ratosthenes Sieve but skipping all of the even numbers to save time
 	primeSieve = []
 	numProcs = mp.cpu_count()
 
+	d = Process(target = timer, args = ())
 
-	# Start the background timer.
-	p = Proces(target = timer)
-	p.start()
+	d.start()
 
 
-	primeCeiling = 100000000
+	primeCeiling = 10
+	signal.signal(signal.SIGUSR1, handler)
 
 
 	# putting a palce holder for 0 and 1
@@ -35,7 +46,7 @@ def main(args):
 	
 	while i < primeCeiling:
 		z = i
-
+		
 		while z < primeCeiling:
 			if z / i != 1:
 				primeSieve[z] = False
